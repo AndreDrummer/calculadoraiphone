@@ -20,13 +20,16 @@ class Button extends StatelessWidget {
     return Expanded(
       flex: this.big ? 2 : 1,
       child: RaisedButton(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(50)
+        ),
         color: this.color,
         onPressed: () => cb(text),
         child: Text(text,
             style: TextStyle(
-              color: Colors.white,
+              color: Colors.white,              
               fontSize: 32,
-              fontWeight: FontWeight.w200,
+              fontWeight: FontWeight.w400,
             )),
       ),
     );

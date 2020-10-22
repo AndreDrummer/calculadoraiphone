@@ -10,24 +10,36 @@ class Button extends StatelessWidget {
   final Color color;
   final void Function(String) cb;
 
-  Button({@required this.text, this.big = false, this.color = DEFAULT, this.cb});
-  Button.big({@required this.text, this.big = true, this.color = DEFAULT, this.cb});
-  Button.operation(
-      {@required this.text, this.big = false, this.color = OPERATION, this.cb});
+  Button({
+    @required this.text,
+    this.big = false,
+    this.color = DEFAULT,
+    this.cb,
+  });
+  Button.big({
+    @required this.text,
+    this.big = true,
+    this.color = DEFAULT,
+    this.cb,
+  });
+  Button.operation({
+    @required this.text,
+    this.big = false,
+    this.color = OPERATION,
+    this.cb,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       flex: this.big ? 2 : 1,
       child: RaisedButton(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(50)
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
         color: this.color,
         onPressed: () => cb(text),
         child: Text(text,
             style: TextStyle(
-              color: Colors.white,              
+              color: Colors.white,
               fontSize: 32,
               fontWeight: FontWeight.w400,
             )),

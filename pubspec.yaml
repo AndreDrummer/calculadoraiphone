@@ -25,6 +25,8 @@ dependencies:
     sdk: flutter
   auto_size_text: 2.1.0
   flutter_launcher_icons: "^0.7.3"
+  firebase_admob: ^0.10.0+2
+  admob_flutter: ^1.0.0
 
 flutter_icons:
   android: "launcher_icon"

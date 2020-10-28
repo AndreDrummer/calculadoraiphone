@@ -10,7 +10,7 @@ class Keyboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 500,
+      height: MediaQuery.of(context).size.height / 1.5,
       child: Column(
         children: <Widget>[
           ButtonRow([

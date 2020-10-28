@@ -40,7 +40,7 @@ class Button extends StatelessWidget {
         child: Text(text,
             style: TextStyle(
               color: Colors.white,
-              fontSize: 32,
+              fontSize: 35,
               fontWeight: FontWeight.w400,
             )),
       ),

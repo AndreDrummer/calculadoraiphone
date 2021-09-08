@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'button.dart';
 
 class ButtonRow extends StatelessWidget {
@@ -11,10 +12,17 @@ class ButtonRow extends StatelessWidget {
       flex: 1,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: buttons.fold(<Widget>[], (list, b) {
-          list.isEmpty ? list.add(b) : list.addAll([SizedBox(width: 5), b]);
-          return list;
-        })
+        children: buttons.fold(
+          <Widget>[],
+          (list, b) {
+            list.isEmpty
+                ? list.add(b)
+                : list.addAll(
+                    [SizedBox(width: 5.0.w), b],
+                  );
+            return list;
+          },
+        ),
       ),
     );
   }

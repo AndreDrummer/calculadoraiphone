@@ -3,22 +3,21 @@ import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import "package:calculator/screens/calculator.dart";
 import 'package:flutter/services.dart';
-import 'package:firebase_admob/firebase_admob.dart';
-import 'package:admob_flutter/admob_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  Admob.initialize();
-  FirebaseAdMob.instance
-      .initialize(appId: 'ca-app-pub-2837828701670824~6493333574');
+  MobileAds.instance.initialize();
   runApp(App());
 }
 
 class App extends StatelessWidget {
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
   static FirebaseAnalytics analytics = FirebaseAnalytics();
-  static FirebaseAnalyticsObserver observer = FirebaseAnalyticsObserver(analytics: analytics);
+  static FirebaseAnalyticsObserver observer =
+      FirebaseAnalyticsObserver(analytics: analytics);
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +25,7 @@ class App extends StatelessWidget {
     return FutureBuilder(
       future: _initialization,
       builder: (context, snapshot) {
-       if (snapshot.hasError) {
+        if (snapshot.hasError) {
           return Directionality(
             child: MediaQuery(
               data: MediaQueryData(),
@@ -37,15 +36,18 @@ class App extends StatelessWidget {
         }
 
         if (snapshot.connectionState == ConnectionState.done) {
-          return MaterialApp(
-            navigatorObservers: <NavigatorObserver>[observer],
-            title: 'Calculadora de iPhone',
-            theme: ThemeData(
-              primarySwatch: Colors.orange,
-              visualDensity: VisualDensity.adaptivePlatformDensity,
+          return ScreenUtilInit(
+            designSize: Size(360, 690),
+            builder: () => MaterialApp(
+              navigatorObservers: <NavigatorObserver>[observer],
+              title: 'Calculadora de iPhone',
+              theme: ThemeData(
+                primarySwatch: Colors.orange,
+                visualDensity: VisualDensity.adaptivePlatformDensity,
+              ),
+              debugShowCheckedModeBanner: false,
+              home: Calculator(),
             ),
-            debugShowCheckedModeBanner: false,
-            home: Calculator(),
           );
         }
 

@@ -1,17 +1,16 @@
 class Memory {
-  String _value = '0';
   List<double> _buffer = [0.0, 0.0];
-  int _bufferIndex = 0;
-  String _operation;
   bool clearDisplay = false;
-  String _lastCommand;
+  int _bufferIndex = 0;
+  String? _lastCommand;
+  String _value = '0';
+  String? _operation;
 
   static const operations = ['+', '-', 'x', '/', '%', '=', "+/-"];
 
   void applyCommand(String command) {
     if (_isReplacingCommand(command)) {
       _operation = command;
-      print("Caraai");
       return;
     }
 

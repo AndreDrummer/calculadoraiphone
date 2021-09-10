@@ -10,77 +10,89 @@ class Calculator extends StatefulWidget {
 }
 
 class _CalculatorState extends State<Calculator> {
-  InterstitialAd? _interstitialAd;
+  final int maxFailedLoadAttempts = 3;
+  int _numRewardedLoadAttempts = 0;
+
   late AdWidget bannerAdWidget;
+  RewardedAd? _rewardedAd;
+
   Memory memory = Memory();
-  late BannerAd myBanner;
+  late BannerAd adBanner;
 
   void _onPressed(String command) {
     setState(() {
       memory.applyCommand(command);
     });
   }
-// Interstitial
 
   @override
   void initState() {
     super.initState();
-    myBanner = BannerAd(
-      adUnitId:
-          'ca-app-pub-3940256099942544/6300978111', //'ca-app-pub-2837828701670824/6086139467',
+    adBanner = BannerAd(
+      adUnitId: 'ca-app-pub-2837828701670824/6086139467',
       listener: BannerAdListener(),
       request: AdRequest(),
       size: AdSize.banner,
     );
-    myBanner.load();
-    bannerAdWidget = AdWidget(ad: myBanner);
-    _createInterstitialAd();
-    waitToShowInterstitialAd();
+    adBanner.load();
+    bannerAdWidget = AdWidget(ad: adBanner);
+    _createRewardedAd();
+    tryShowRewardedAd();
   }
 
-  void _createInterstitialAd() {
-    InterstitialAd.load(
-      adUnitId: InterstitialAd.testAdUnitId,
+  void _createRewardedAd() {
+    RewardedAd.load(
+      adUnitId: 'ca-app-pub-2837828701670824/1879398858',
       request: AdRequest(),
-      adLoadCallback: InterstitialAdLoadCallback(
-        onAdLoaded: (InterstitialAd ad) {
-          // Keep a reference to the ad so you can show it later.
-          this._interstitialAd = ad;
-          print(' ${_interstitialAd?.adUnitId} InterstitialAd');
+      rewardedAdLoadCallback: RewardedAdLoadCallback(
+        onAdLoaded: (RewardedAd ad) {
+          print('$ad loaded.');
+          _rewardedAd = ad;
+          _numRewardedLoadAttempts = 0;
         },
         onAdFailedToLoad: (LoadAdError error) {
-          print('InterstitialAd failed to load: $error');
+          print('RewardedAd failed to load: $error');
+          _rewardedAd = null;
+          _numRewardedLoadAttempts += 1;
+          if (_numRewardedLoadAttempts <= maxFailedLoadAttempts) {
+            _createRewardedAd();
+          }
         },
       ),
     );
   }
 
-  void _showInterstitialAd() {
-    if (_interstitialAd == null) {
-      print('Warning: attempt to show interstitial before loaded.');
+  void _showRewardedAd() {
+    if (_rewardedAd == null) {
+      print('Warning: attempt to show rewarded before loaded.');
+      tryShowRewardedAd();
       return;
     }
-    _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
-      onAdShowedFullScreenContent: (InterstitialAd ad) =>
+    _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
+      onAdShowedFullScreenContent: (RewardedAd ad) =>
           print('ad onAdShowedFullScreenContent.'),
-      onAdDismissedFullScreenContent: (InterstitialAd ad) {
+      onAdDismissedFullScreenContent: (RewardedAd ad) {
         print('$ad onAdDismissedFullScreenContent.');
         ad.dispose();
-        _createInterstitialAd();
+        _createRewardedAd();
       },
-      onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
+      onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
         print('$ad onAdFailedToShowFullScreenContent: $error');
         ad.dispose();
-        _createInterstitialAd();
+        _createRewardedAd();
       },
     );
-    _interstitialAd!.show();
-    _interstitialAd = null;
+
+    _rewardedAd!.setImmersiveMode(true);
+    _rewardedAd!.show(onUserEarnedReward: (RewardedAd ad, RewardItem reward) {
+      print('$ad with reward $RewardItem(${reward.amount}, ${reward.type}');
+    });
+    _rewardedAd = null;
   }
 
-  void waitToShowInterstitialAd() {
+  void tryShowRewardedAd() {
     Future.delayed(Duration(seconds: 3), () {
-      _showInterstitialAd();
+      _showRewardedAd();
     });
   }
 
@@ -92,8 +104,8 @@ class _CalculatorState extends State<Calculator> {
         children: <Widget>[
           SizedBox(height: 35),
           Container(
-            height: myBanner.size.height.toDouble(),
-            width: myBanner.size.width.toDouble(),
+            height: adBanner.size.height.toDouble(),
+            width: adBanner.size.width.toDouble(),
             alignment: Alignment.center,
             child: bannerAdWidget,
           ),
@@ -106,7 +118,8 @@ class _CalculatorState extends State<Calculator> {
 
   @override
   void dispose() {
-    myBanner.dispose();
+    _rewardedAd?.dispose();
+    adBanner.dispose();
     super.dispose();
   }
 }

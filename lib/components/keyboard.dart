@@ -41,11 +41,13 @@ class Keyboard extends StatelessWidget {
             Button.operation(text: '+', cb: cb)
           ]),
           SizedBox(height: 5.0.h),
-          ButtonRow([
-            Button.big(text: '0', cb: cb),
-            Button(text: '.', cb: cb),
-            Button.operation(text: '=', cb: cb)
-          ]),
+          ButtonRow(
+            [
+              Button.big(text: '0', cb: cb),
+              Button(text: '.', cb: cb),
+              Button.operation(text: '=', cb: cb)
+            ],
+          ),
         ],
       ),
     );

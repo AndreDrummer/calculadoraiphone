@@ -18,7 +18,7 @@ class ButtonRow extends StatelessWidget {
             list.isEmpty
                 ? list.add(b)
                 : list.addAll(
-                    [SizedBox(width: 5.0.w), b],
+                    [SizedBox(width: 4.0.w), b],
                   );
             return list;
           },

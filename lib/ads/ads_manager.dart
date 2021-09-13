@@ -1,3 +1,4 @@
+import 'package:calculator/ads/ads_id.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -12,7 +13,7 @@ class AdsManager {
 
   void createBannerAd() {
     adBanner = BannerAd(
-      adUnitId: BannerAd.testAdUnitId, //CalculatorAdsID.bannerId,
+      adUnitId: CalculatorAdsID.bannerId,
       listener: BannerAdListener(),
       request: AdRequest(),
       size: AdSize.banner,
@@ -31,7 +32,7 @@ class AdsManager {
 
   void createRewardedAd() {
     RewardedAd.load(
-      adUnitId: RewardedAd.testAdUnitId, //CalculatorAdsID.rewardedId,
+      adUnitId: CalculatorAdsID.rewardedId,
       request: AdRequest(),
       rewardedAdLoadCallback: RewardedAdLoadCallback(
         onAdLoaded: (RewardedAd ad) {
@@ -87,7 +88,7 @@ class AdsManager {
 
   void createInterstitialAd() {
     InterstitialAd.load(
-      adUnitId: InterstitialAd.testAdUnitId, // CalculatorAdsID.interstitialId
+      adUnitId: CalculatorAdsID.interstitialId,
       request: AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (InterstitialAd ad) {
@@ -132,7 +133,7 @@ class AdsManager {
   }
 
   void keepTryingShowInterstitialAd() {
-    Future.delayed(Duration(seconds: 60), () {
+    Future.delayed(Duration(seconds: 30), () {
       _showInterstitialAd();
     });
   }

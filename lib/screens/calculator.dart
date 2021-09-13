@@ -12,7 +12,7 @@ class Calculator extends StatefulWidget {
 class _CalculatorState extends State<Calculator> {
   AdsManager adsManager = AdsManager();
   Memory memory = Memory();
-  bool isPremium = true;
+  bool isPremium = false;
 
   @override
   void initState() {

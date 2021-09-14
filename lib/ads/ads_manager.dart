@@ -81,7 +81,7 @@ class AdsManager {
   }
 
   void keepTryingShowRewardedAd() {
-    Future.delayed(Duration(seconds: 3), () {
+    Future.delayed(Duration(seconds: 2), () {
       _showRewardedAd();
     });
   }
@@ -133,7 +133,7 @@ class AdsManager {
   }
 
   void keepTryingShowInterstitialAd() {
-    Future.delayed(Duration(seconds: 30), () {
+    Future.delayed(Duration(seconds: 2), () {
       _showInterstitialAd();
     });
   }

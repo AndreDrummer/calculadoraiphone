@@ -18,22 +18,29 @@ class _CalculatorState extends State<Calculator> {
   void initState() {
     super.initState();
     if (!isPremium) {
-      loadAds();
+      createAds();
     }
   }
 
   void _onPressed(String command) {
+    if (command == '=') loadProgramaticallyAds();
     setState(() {
       memory.applyCommand(command);
     });
   }
 
-  void loadAds() {
+  void createAds() {
     adsManager.createBannerAd();
     adsManager.createRewardedAd();
-    adsManager.keepTryingShowRewardedAd();
     adsManager.createInterstitialAd();
-    adsManager.keepTryingShowInterstitialAd();
+  }
+
+  void loadProgramaticallyAds() {
+    if (DateTime.now().millisecondsSinceEpoch.isOdd) {
+      adsManager.keepTryingShowRewardedAd();
+    } else {
+      adsManager.keepTryingShowInterstitialAd();
+    }
   }
 
   @override

@@ -1,3 +1,4 @@
+import 'package:calculator/ads/ads_manager.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
@@ -7,9 +8,18 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
+bool isPremium = false;
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
+  AdsManager adsManager = AdsManager();
+
+  if (!isPremium) {
+    adsManager.createRewardedAd();
+    adsManager.createInterstitialAd();
+    adsManager.keepTryingShowRewardedAd();
+  }
   runApp(App());
 }
 

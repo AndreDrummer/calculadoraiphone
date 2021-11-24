@@ -15,13 +15,13 @@ class AdsManager {
     adBanner = BannerAd(
       adUnitId: CalculatorAdsID.bannerId,
       listener: BannerAdListener(),
+      size: AdSize.fullBanner,
       request: AdRequest(),
-      size: AdSize.banner,
     );
+    adBanner.load();
   }
 
   Container adBannerWidget() {
-    adBanner.load();
     return Container(
       height: adBanner.size.height.toDouble(),
       width: adBanner.size.width.toDouble(),

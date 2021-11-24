@@ -2,16 +2,20 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
-class Display extends StatelessWidget {
+class Display extends StatefulWidget {
   final String text;
   Display(this.text);
 
+  @override
+  State<Display> createState() => _DisplayState();
+}
+
+class _DisplayState extends State<Display> {
   @override
   Widget build(BuildContext context) {
     return Expanded(
       flex: 1,
       child: Container(
-        // color: Color.fromRGBO(48, 48, 48, 1),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.end,
@@ -19,7 +23,7 @@ class Display extends StatelessWidget {
             Padding(
               padding: EdgeInsets.all(8.0.h),
               child: AutoSizeText(
-                text,
+                widget.text,
                 minFontSize: 20,
                 maxFontSize: 80,
                 textAlign: TextAlign.end,

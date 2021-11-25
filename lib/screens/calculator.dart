@@ -1,7 +1,6 @@
 import 'package:calculator/ads/ads_manager.dart';
 import 'package:calculator/components/display.dart';
 import 'package:calculator/components/keyboard.dart';
-import 'package:calculator/main.dart';
 import 'package:calculator/models/memory.dart';
 import 'package:flutter/material.dart';
 
@@ -13,6 +12,7 @@ class Calculator extends StatefulWidget {
 class _CalculatorState extends State<Calculator> {
   AdsManager adsManager = AdsManager();
   Memory memory = Memory();
+  bool isPremium = false;
 
   @override
   void didChangeDependencies() {
@@ -47,11 +47,15 @@ class _CalculatorState extends State<Calculator> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: Column(
-        children: <Widget>[
-          SizedBox(height: 35),
-          Display(memory.value),
-          Keyboard(_onPressed),
+      child: Stack(
+        children: [
+          Column(
+            children: <Widget>[
+              SizedBox(height: 35),
+              Display(memory.value),
+              Keyboard(_onPressed),
+            ],
+          ),
         ],
       ),
     );

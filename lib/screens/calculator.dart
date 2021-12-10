@@ -15,6 +15,14 @@ class _CalculatorState extends State<Calculator> {
   bool isPremium = false;
 
   @override
+  void initState() {
+    super.initState();
+    if (!isPremium) {
+      adsManager.keepTryingShowRewardedAd();
+    }
+  }
+
+  @override
   void didChangeDependencies() {
     if (!isPremium) {
       createAds();

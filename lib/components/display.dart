@@ -33,7 +33,7 @@ class _DisplayState extends State<Display> {
                   decoration: TextDecoration.none,
                   fontWeight: FontWeight.normal,
                   color: Colors.white,
-                  fontSize: 80.sp,
+                  fontSize: 72.sp,
                 ),
               ),
             ),

@@ -35,12 +35,7 @@ class Button extends StatelessWidget {
     return Expanded(
       flex: this.big ? 2 : 1,
       child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(48.0.h),
-          ),
-          primary: this.color,
-        ),
+        style: ElevatedButton.styleFrom(backgroundColor: this.color),
         onPressed: () => cb!(text),
         child: Text(
           text,

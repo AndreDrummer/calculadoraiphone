@@ -16,6 +16,7 @@ class _DisplayState extends State<Display> {
     return Expanded(
       flex: 1,
       child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.end,

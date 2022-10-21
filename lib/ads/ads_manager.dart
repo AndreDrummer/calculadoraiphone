@@ -1,6 +1,8 @@
+import 'package:calculator/storage/local_storage.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:calculator/ads/ads_id.dart';
 import 'package:flutter/material.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class AdsManager {
   int _numInterstitialLoadAttempts = 0;
@@ -25,8 +27,9 @@ class AdsManager {
     return Container(
       height: adBanner.size.height.toDouble(),
       width: adBanner.size.width.toDouble(),
-      alignment: Alignment.center,
+      margin: EdgeInsets.only(top: 32.0.h),
       child: AdWidget(ad: adBanner),
+      alignment: Alignment.center,
     );
   }
 
@@ -78,6 +81,21 @@ class AdsManager {
       print('$ad with reward $RewardItem(${reward.amount}, ${reward.type}');
     });
     _rewardedAd = null;
+    _handleShowAd();
+  }
+
+  void _handleShowAd() {
+    final today = DateTime.now();
+    final yesterday = today.subtract(Duration(days: 1));
+
+    LocalStorage.deleteValueUnderString(
+      yesterday.toIso8601String().split('T').first,
+    );
+
+    LocalStorage.setValueUnderString(
+      key: today.toIso8601String().split('T').first,
+      value: 'true',
+    );
   }
 
   void keepTryingShowRewardedAd() {

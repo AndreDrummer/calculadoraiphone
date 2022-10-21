@@ -1,6 +1,7 @@
-import 'package:calculator/ads/ads_manager.dart';
-import 'package:calculator/components/display.dart';
+import 'package:calculator/storage/local_storage.dart';
 import 'package:calculator/components/keyboard.dart';
+import 'package:calculator/components/display.dart';
+import 'package:calculator/ads/ads_manager.dart';
 import 'package:calculator/models/memory.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +18,17 @@ class _CalculatorState extends State<Calculator> {
   @override
   void initState() {
     super.initState();
-    if (!isPremium) {
+    showRewarded();
+  }
+
+  Future<void> showRewarded() async {
+    var adShownToday = await LocalStorage.getValueUnderString(
+      DateTime.now().toIso8601String().split('T').first,
+    );
+
+    bool alreadyShown = adShownToday != null;
+
+    if (!isPremium && !alreadyShown) {
       adsManager.keepTryingShowRewardedAd();
     }
   }
@@ -31,7 +42,6 @@ class _CalculatorState extends State<Calculator> {
   }
 
   void _onPressed(String command) {
-    if (command == '=') loadProgramaticallyAds();
     setState(() {
       memory.applyCommand(command);
     });
@@ -43,29 +53,15 @@ class _CalculatorState extends State<Calculator> {
     adsManager.createInterstitialAd();
   }
 
-  void loadProgramaticallyAds() {
-    if (DateTime.now().minute % 5 == 0) {
-      adsManager.keepTryingShowRewardedAd();
-    } else if (DateTime.now().minute % 2 == 0) {
-      adsManager.keepTryingShowInterstitialAd();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: Stack(
-        children: [
-          Column(
-            children: <Widget>[
-              SizedBox(height: 35),
-              Display(memory.value),
-              Keyboard(_onPressed),
-            ],
-          ),
-        ],
-      ),
+    return Column(
+      children: <Widget>[
+        adsManager.adBannerWidget(),
+        SizedBox(height: 35),
+        Display(memory.value),
+        Keyboard(_onPressed),
+      ],
     );
   }
 

@@ -15,6 +15,7 @@ class _KeyboardState extends State<Keyboard> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 8.0),
       height: MediaQuery.of(context).size.height / 1.5,
       child: Column(
         children: <Widget>[

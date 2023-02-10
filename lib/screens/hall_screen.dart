@@ -35,7 +35,7 @@ class _HallScreenState extends State<HallScreen> {
                 });
               },
               child: AutoSizeText(
-                'Ir para calculadora',
+                'OPEN CALCULATOR',
                 style: TextStyle(color: Colors.white),
               ),
             ),
@@ -44,7 +44,7 @@ class _HallScreenState extends State<HallScreen> {
                 exit(0);
               },
               child: AutoSizeText(
-                'Fechar aplicativo',
+                'EXIT',
                 style: TextStyle(color: Colors.white),
               ),
             ),

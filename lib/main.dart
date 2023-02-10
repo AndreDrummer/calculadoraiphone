@@ -1,61 +1,76 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import "package:calculator/screens/calculator.dart";
-import 'package:firebase_analytics/observer.dart';
+import 'package:calculator/screens/hall_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:calculator/ads/ads_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   MobileAds.instance.initialize();
 
   runApp(App());
 }
 
-class App extends StatelessWidget {
-  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
-  static FirebaseAnalytics analytics = FirebaseAnalytics();
-  static FirebaseAnalyticsObserver observer =
-      FirebaseAnalyticsObserver(analytics: analytics);
+class App extends StatefulWidget {
+  @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  final AdsManager adsManager = AdsManager();
+
+  @override
+  void initState() {
+    adsManager.loadAds();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    return FutureBuilder(
-      future: _initialization,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Directionality(
-            child: MediaQuery(
-              data: MediaQueryData(),
-              child: Center(child: Text('${snapshot.error}')),
-            ),
-            textDirection: TextDirection.ltr,
-          );
-        }
-
-        if (snapshot.connectionState == ConnectionState.done) {
-          return ScreenUtilInit(
-            designSize: Size(360, 690),
-            builder: () => MaterialApp(
-              navigatorObservers: <NavigatorObserver>[observer],
-              title: 'Calculadora de iPhone',
-              theme: ThemeData(
-                primarySwatch: Colors.orange,
-                visualDensity: VisualDensity.adaptivePlatformDensity,
-              ),
-              debugShowCheckedModeBanner: false,
-              home: Calculator(),
-            ),
-          );
-        }
-
-        return Center(
-          child: CircularProgressIndicator(),
-        );
-      },
+    return ScreenUtilInit(
+      designSize: Size(360, 690),
+      builder: (_, __) => GetMaterialApp(
+        title: 'Calculadora de iPhone',
+        theme: ThemeData(
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+          primarySwatch: Colors.orange,
+        ),
+        debugShowCheckedModeBanner: false,
+        home: FutureBuilder<void>(
+          future: adsManager.loadAds(),
+          builder: (context, snapshot) {
+            return Stack(
+              children: [
+                HallScreen(),
+                Visibility(
+                  visible: snapshot.connectionState == ConnectionState.waiting,
+                  child: Container(
+                    alignment: Alignment.center,
+                    color: Colors.black.withOpacity(.7),
+                    child: SizedBox(
+                      child: CircularProgressIndicator(strokeWidth: 1),
+                      height: 40.0.h,
+                      width: 40.0.w,
+                    ),
+                    height: Get.height,
+                    width: Get.width,
+                  ),
+                )
+              ],
+            );
+          },
+        ),
+      ),
     );
   }
 }

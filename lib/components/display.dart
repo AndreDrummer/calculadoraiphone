@@ -17,9 +17,7 @@ class _DisplayState extends State<Display> {
       flex: 1,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.end,
+        child: ListView(
           children: <Widget>[
             Padding(
               padding: EdgeInsets.all(8.0.h),

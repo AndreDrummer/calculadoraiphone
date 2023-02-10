@@ -38,10 +38,18 @@
             {
               "client_id": "983714225064-vbscufbjeuke3vs8v1ac33jq4ad8u12u.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "983714225064-6j9run2r87as9bo8h4370sjbtue7gi8i.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.anjasolutions.calculatorios"
+              }
             }
           ]
         }
-      }
+      },
+      "admob_app_id": "ca-app-pub-2837828701670824~6493333574"
     }
   ],
   "configuration_version": "1"

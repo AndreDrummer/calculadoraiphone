@@ -1,164 +1,88 @@
-import 'package:calculator/storage/local_storage.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:calculator/ads/ads_id.dart';
-import 'package:flutter/material.dart';
+import 'package:calculator/storage/local_storage.dart';
+import 'package:flutter/foundation.dart';
 
 class AdsManager {
-  int _numInterstitialLoadAttempts = 0;
-  final int maxFailedLoadAttempts = 3;
-  int _numRewardedLoadAttempts = 0;
-  InterstitialAd? _interstitialAd;
-  late AdWidget bannerAdWidget;
   RewardedAd? _rewardedAd;
-  late BannerAd adBanner;
 
-  void createBannerAd() {
-    adBanner = BannerAd(
-      adUnitId: CalculatorAdsID.bannerId,
-      listener: BannerAdListener(),
-      size: AdSize.fullBanner,
-      request: AdRequest(),
-    );
-    adBanner.load();
+  bool _rewardedAdWasLoaded = false;
+
+  Future<void> loadAds() async {
+    await _loadRewardedAd();
   }
 
-  Container adBannerWidget() {
-    return Container(
-      height: adBanner.size.height.toDouble(),
-      width: adBanner.size.width.toDouble(),
-      margin: EdgeInsets.only(top: 32.0.h),
-      child: AdWidget(ad: adBanner),
-      alignment: Alignment.center,
-    );
-  }
-
-  void createRewardedAd() {
-    RewardedAd.load(
-      adUnitId: CalculatorAdsID.rewardedId,
-      request: AdRequest(),
-      rewardedAdLoadCallback: RewardedAdLoadCallback(
-        onAdLoaded: (RewardedAd ad) {
-          print('$ad loaded.');
-          _numRewardedLoadAttempts = 0;
-          _rewardedAd = ad;
-        },
-        onAdFailedToLoad: (LoadAdError error) {
-          print('RewardedAd failed to load: $error');
-          _rewardedAd = null;
-          _numRewardedLoadAttempts += 1;
-          if (_numRewardedLoadAttempts <= maxFailedLoadAttempts) {
-            createRewardedAd();
-          }
-        },
-      ),
-    );
-  }
-
-  void _showRewardedAd() {
-    if (_rewardedAd == null) {
-      print('Warning: attempt to show rewarded before loaded.');
-      keepTryingShowRewardedAd();
-      return;
+  Future<void> _loadRewardedAd() async {
+    try {
+      await RewardedAd.load(
+        adUnitId: 'ca-app-pub-2837828701670824/5452994852',
+        request: AdRequest(),
+        rewardedAdLoadCallback: RewardedAdLoadCallback(
+          onAdLoaded: (RewardedAd ad) {
+            debugPrint('RewardedAd $ad loaded.');
+            this._rewardedAd = ad;
+            _rewardedAdWasLoaded = true;
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            debugPrint('RewardedAd failed to load: $error');
+          },
+        ),
+      );
+    } catch (exception) {
+      print('An error ocurred when trying load Rewarded Ad: $exception.');
     }
-    _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
-      onAdShowedFullScreenContent: (RewardedAd ad) =>
-          print('ad onAdShowedFullScreenContent.'),
+  }
+
+  Future<bool> _mustShowAd() async {
+    final storageKey = DateTime.now().toIso8601String().split('T').first;
+
+    var adShownToday = await LocalStorage.getValueUnderString(storageKey);
+
+    print(storageKey);
+    print(adShownToday);
+
+    return adShownToday == null;
+  }
+
+  Future<void> showRewardedAd() async {
+    if (await _mustShowAd()) {
+      if (!_rewardedAdWasLoaded) {
+        await _loadRewardedAd();
+        _showRewarded();
+      } else if (_rewardedAd != null) {
+        _showRewarded();
+      }
+    }
+  }
+
+  void _showRewarded() {
+    _rewardedAd?.fullScreenContentCallback = FullScreenContentCallback(
+      onAdShowedFullScreenContent: (RewardedAd ad) => debugPrint('$ad onAdShowedFullScreenContent.'),
       onAdDismissedFullScreenContent: (RewardedAd ad) {
-        print('$ad onAdDismissedFullScreenContent.');
+        debugPrint('$ad onAdDismissedFullScreenContent.');
         ad.dispose();
-        createRewardedAd();
       },
       onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
-        print('$ad onAdFailedToShowFullScreenContent: $error');
+        debugPrint('$ad onAdFailedToShowFullScreenContent: $error');
         ad.dispose();
-        createRewardedAd();
       },
+      onAdImpression: (RewardedAd ad) => debugPrint('$ad impression occurred.'),
     );
 
-    _rewardedAd!.setImmersiveMode(true);
-    _rewardedAd!.show(onUserEarnedReward: (RewardedAd ad, RewardItem reward) {
-      print('$ad with reward $RewardItem(${reward.amount}, ${reward.type}');
-    });
-    _rewardedAd = null;
-    _handleShowAd();
-  }
-
-  void _handleShowAd() {
-    final today = DateTime.now();
-    final yesterday = today.subtract(Duration(days: 1));
-
-    LocalStorage.deleteValueUnderString(
-      yesterday.toIso8601String().split('T').first,
-    );
-
-    LocalStorage.setValueUnderString(
-      key: today.toIso8601String().split('T').first,
-      value: 'true',
-    );
-  }
-
-  void keepTryingShowRewardedAd() {
-    Future.delayed(Duration(seconds: 2), () {
-      _showRewardedAd();
-    });
-  }
-
-  void createInterstitialAd() {
-    InterstitialAd.load(
-      adUnitId: CalculatorAdsID.interstitialId,
-      request: AdRequest(),
-      adLoadCallback: InterstitialAdLoadCallback(
-        onAdLoaded: (InterstitialAd ad) {
-          print('$ad loaded');
-          _interstitialAd = ad;
-          _numInterstitialLoadAttempts = 0;
-          _interstitialAd!.setImmersiveMode(true);
-        },
-        onAdFailedToLoad: (LoadAdError error) {
-          print('InterstitialAd failed to load: $error.');
-          _numInterstitialLoadAttempts += 1;
-          _interstitialAd = null;
-          if (_numInterstitialLoadAttempts <= maxFailedLoadAttempts) {
-            createInterstitialAd();
-          }
-        },
-      ),
-    );
-  }
-
-  void _showInterstitialAd() {
-    if (_interstitialAd == null) {
-      print('Warning: attempt to show interstitial before loaded.');
-      return;
-    }
-    _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
-      onAdShowedFullScreenContent: (InterstitialAd ad) =>
-          print('ad onAdShowedFullScreenContent.'),
-      onAdDismissedFullScreenContent: (InterstitialAd ad) {
-        print('$ad onAdDismissedFullScreenContent.');
+    _rewardedAd?.show(
+      onUserEarnedReward: (AdWithoutView ad, RewardItem rewardItem) async {
         ad.dispose();
-        createInterstitialAd();
-      },
-      onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
-        print('$ad onAdFailedToShowFullScreenContent: $error');
-        ad.dispose();
-        createInterstitialAd();
-      },
-    );
-    _interstitialAd!.show();
-    _interstitialAd = null;
-  }
+        if (kDebugMode) debugPrint('TiuTiuApp: Usuário assistiu certinho ${ad.adUnitId} ${rewardItem.amount}');
 
-  void keepTryingShowInterstitialAd() {
-    Future.delayed(Duration(seconds: 2), () {
-      _showInterstitialAd();
-    });
-  }
+        await LocalStorage.clearStorage();
 
-  void dispose() {
-    _interstitialAd?.dispose();
-    _rewardedAd?.dispose();
-    adBanner.dispose();
+        final todayDate = DateTime.now();
+
+        final storageKey = todayDate.toIso8601String().split('T').first;
+
+        print('showOpening $storageKey');
+
+        LocalStorage.setValueUnderString(key: storageKey, value: storageKey);
+      },
+    ).then((_) => _rewardedAdWasLoaded = false);
   }
 }
